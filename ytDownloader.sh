@@ -62,3 +62,7 @@ video() {
     done
 }
 
+
+webm2mp4() {
+    ffmpeg -i "$1" -c:v libx264 -crf 23 -preset medium -c:a aac -b:a 192k "$2"
+}
