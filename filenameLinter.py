@@ -35,6 +35,10 @@ dongles = str.maketrans(
 # convert to ascii
 def sanitise(name: str) -> str:
     """
+        Translate and convert all look-alike unicode
+    charactes to their plain english counterparts;
+    drop anything else that is not recognized as an
+    alphanumeric character.
     """
 
     stem, ext = splitext(name)
@@ -48,24 +52,40 @@ def sanitise(name: str) -> str:
     return f"{stem}{ext.lower()}"
 
 
-# gather music files from the directory
 def music_files(folder: Path):
     """
+        Glob music files from a directory and return
+    all files that are actually files and have musical
+    file extensions.
+
+    As a rule, I stick to Mp3 files but I have included
+    other formats in an effort to be thorough.
     """
 
-    # i only use .mp3, but include others to be thorough
-    extensions = {".mp3", ".flac", ".wav", ".aac", ".ogg", ".m4a", ".alac"}
+    extensions = { ".mp3", ".flac", ".wav",
+                   ".aac", ".ogg",  ".m4a",
+                   ".alac"                  }
 
-    # return all files that actually are files and have matching extensions.
     return [ file for file in folder.rglob("*") \
               if  file.is_file() \
               and file.suffix.lower() \
               in extensions                       ]
 
 
-# 4️⃣  Main logic – rename via `mv`
 def main(root: Path):
+    """
+    Sanitizes music file names in the given directory by
+    converting fancy/Unicode/leet characters into plain
+    English, then renames the files accordingly.
+    
+    Arguments:
+        root (Path): The directory to scan for music files.
+    """
+
+    # enumerate files in our library
     files = music_files(root)
+
+    # make sure we aren't in an empty directory
     if not files:
         print( "No music files found." )
         return
@@ -84,7 +104,10 @@ def main(root: Path):
         if newName == track.name:
             continue
 
-        dst = src.with_name(new_name)
+        # create a new filepath based on the new name
+        dst = track.with_name(newName)
+
+        # begin counting for namespace collisions
         counter = 1
         while dst.exists():
             
@@ -112,10 +135,10 @@ def main(root: Path):
             print( "  ⚠️  mv failed:",
                    completed.stderr.strip() )
 
-    print("\n✔ All renames attempted.")
+    # inform success, if possible
+    print( "\n✔ All renames attempted." )
 
 
-# 5️⃣  Entry point
 if __name__ == "__main__":
 
     target = Path(sys.argv[1]) \
