@@ -17,19 +17,32 @@
 
 music() {
 
-    playlist="$1"                  # youtube link to playlist
-    chunk=$2                       # download this many tracks before refreshing cookies
-    pause=$3                       # wait this long between chunks
-    conf="~/.config/yt-dlp/config" # configuration file containing other parameters.
-
+    # configuration file containing other parameters.
+    conf="~/.config/yt-dlp/config"
+    
+    # youtube link to playlist
+    playlist="$1"
+    
+    # download this many tracks before refreshing cookies
+    chunk=$2
+    
+    # wait this long between chunks
+    pause=$3
+    
 
     while true; do
 
       # yt-dlp download and convert to mp3; but continue even if it fails
-      yt-dlp --config-location $conf --extract-audio --audio-format mp3 --max-downloads "$chunk" "$playlist"  || true
+      yt-dlp --config-location $conf \
+	     --extract-audio \
+	     --audio-format mp3 \
+	     --max-downloads "$chunk" \
+	     "$playlist"  || true
  
-      # let the user know whats up when we stop after $chunk number of tracks for $pause number of seconds
-      printf '\n[%(%F %T)T]  Pausing %ss and re‑loading fresh cookies …\n' -1 "$pause"
+      # let the user know whats up when we stop after
+      # $chunk number of tracks for $pause number of seconds
+      printf '\n[%(%F %T)T]  Pausing %ss and re‑loading fresh cookies …\n' \
+	     -1 "$pause"
 
       # wait.
       sleep "$pause"
@@ -43,19 +56,30 @@ music() {
 
 video() {
 
-    playlist="$1"                  # youtube link to playlist
-    chunk=$2                       # download this many tracks before refreshing cookies
-    pause=$3                       # wait this long between chunks
-    conf="~/.config/yt-dlp/config" # configuration file containing other parameters.
+    # configuration file containing other parameters.
+    conf="~/.config/yt-dlp/config"
     
+    # youtube link to playlist
+    playlist="$1"
     
+    # download this many tracks before refreshing cookies
+    chunk=$2
+    
+    # wait this long between chunks
+    pause=$3
+    
+
     while true; do
 
       # typical yt-dlp download; but continue even if it fails
-      yt-dlp --config-location "$conf" --max-downloads "$chunk" "$playlist"  || true
+      yt-dlp --config-location "$conf" \
+	     --max-downloads "$chunk" \
+	     "$playlist"  || true
 
-      # let the user know whats up when we stop after $chunk number of tracks for $pause number of seconds
-      printf '\n[%(%F %T)T]  Pausing %ss and re‑loading fresh cookies …\n' -1 "$pause"
+      # let the user know whats up when we stop after
+      # $chunk number of tracks for $pause number of seconds
+      printf '\n[%(%F %T)T]  Pausing %ss and re‑loading fresh cookies …\n' \
+	     -1 "$pause"
 
       # wait.
       sleep "$pause"
@@ -64,5 +88,12 @@ video() {
 
 
 webm2mp4() {
-    ffmpeg -i "$1" -c:v libx264 -crf 23 -preset medium -c:a aac -b:a 192k "$2"
+    ffmpeg -i "$1" \
+	   -c:v libx264 \
+	   -crf 23 \
+	   -preset medium \
+	   -c:a aac \
+	   -b:a 192k "$2"
 }
+
+
